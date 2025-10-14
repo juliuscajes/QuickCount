@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   TextInput,
   Button,
   StyleSheet,
-  Picker,
   ActivityIndicator,
+  Alert,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 
 export default function ConverterScreen() {
   const [amount, setAmount] = useState("");
@@ -16,19 +17,33 @@ export default function ConverterScreen() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const currencies = ["PHP", "USD", "EUR", "JPY", "GBP"];
+  const currencies = ["PHP", "USD", "EUR", "JPY", "GBP", "AUD", "CAD"];
 
-  const convertCurrency = async () => {
-    if (!amount) return alert("Enter an amount first!");
+  const handleConvert = async () => {
+    if (!amount) {
+      Alert.alert("Missing Amount", "Please enter an amount to convert.");
+      return;
+    }
+
     setLoading(true);
     try {
+      // ✅ Free & stable API
       const response = await fetch(
-        `https://api.exchangerate.host/convert?from=${fromCurrency}&to=${toCurrency}&amount=${amount}`
+        `https://open.er-api.com/v6/latest/${fromCurrency}`
       );
       const data = await response.json();
-      setResult(data.result);
+
+      if (data && data.result === "success" && data.rates[toCurrency]) {
+        const rate = data.rates[toCurrency];
+        const converted = rate * parseFloat(amount);
+        setResult(converted);
+      } else {
+        Alert.alert("Conversion Failed", "Could not get conversion data.");
+        setResult(null);
+      }
     } catch (error) {
-      alert("Failed to fetch conversion rate.");
+      Alert.alert("Error", "Check your internet connection and try again.");
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -46,70 +61,74 @@ export default function ConverterScreen() {
         onChangeText={setAmount}
       />
 
-      <View style={styles.row}>
-        <View style={styles.pickerContainer}>
-          <Text style={styles.label}>From:</Text>
-          <Picker
-            selectedValue={fromCurrency}
-            onValueChange={(val) => setFromCurrency(val)}
-            style={styles.picker}
-          >
-            {currencies.map((cur) => (
-              <Picker.Item key={cur} label={cur} value={cur} />
-            ))}
-          </Picker>
-        </View>
+      <Text style={styles.label}>From:</Text>
+      <Picker
+        selectedValue={fromCurrency}
+        onValueChange={(value) => setFromCurrency(value)}
+        style={styles.picker}
+      >
+        {currencies.map((cur) => (
+          <Picker.Item key={cur} label={cur} value={cur} />
+        ))}
+      </Picker>
 
-        <View style={styles.pickerContainer}>
-          <Text style={styles.label}>To:</Text>
-          <Picker
-            selectedValue={toCurrency}
-            onValueChange={(val) => setToCurrency(val)}
-            style={styles.picker}
-          >
-            {currencies.map((cur) => (
-              <Picker.Item key={cur} label={cur} value={cur} />
-            ))}
-          </Picker>
-        </View>
-      </View>
+      <Text style={styles.label}>To:</Text>
+      <Picker
+        selectedValue={toCurrency}
+        onValueChange={(value) => setToCurrency(value)}
+        style={styles.picker}
+      >
+        {currencies.map((cur) => (
+          <Picker.Item key={cur} label={cur} value={cur} />
+        ))}
+      </Picker>
 
-      <Button title="Convert" onPress={convertCurrency} />
+      <Button title="Convert" onPress={handleConvert} color="#007AFF" />
 
-      {loading ? (
-        <ActivityIndicator
-          size="large"
-          color="#007AFF"
-          style={{ marginTop: 20 }}
-        />
-      ) : result !== null ? (
+      {loading && <ActivityIndicator size="large" style={{ marginTop: 20 }} />}
+
+      {typeof result === "number" && (
         <Text style={styles.result}>
           {amount} {fromCurrency} = {result.toFixed(2)} {toCurrency}
         </Text>
-      ) : null}
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, justifyContent: "center" },
-  title: { fontSize: 24, textAlign: "center", marginBottom: 20 },
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#F7F9FC",
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginVertical: 10,
+  },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 10,
     padding: 10,
-    marginBottom: 15,
+    borderRadius: 10,
+    marginBottom: 10,
   },
-  row: { flexDirection: "row", justifyContent: "space-between" },
-  pickerContainer: { flex: 1, marginHorizontal: 5 },
-  picker: { height: 50 },
-  label: { textAlign: "center", marginBottom: 5 },
-  result: {
-    textAlign: "center",
-    marginTop: 20,
-    fontSize: 18,
+  label: {
     fontWeight: "bold",
+    marginTop: 10,
+  },
+  picker: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  result: {
+    marginTop: 20,
+    textAlign: "center",
+    fontSize: 18,
     color: "#007AFF",
+    fontWeight: "bold",
   },
 });

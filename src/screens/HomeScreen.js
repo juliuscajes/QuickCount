@@ -1,18 +1,19 @@
 import React from "react";
-import { View, Text, Button } from "react-native";
-import { signOut } from "firebase/auth";
-import { auth } from "../config/firebase";
+import { View, Text, StyleSheet, Button } from "react-native";
 
 export default function HomeScreen({ navigation }) {
-  const handleLogout = async () => {
-    await signOut(auth);
-    navigation.replace("Login");
-  };
-
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text style={{ fontSize: 20 }}>Welcome to QuickCount 🎉</Text>
-      <Button title="Logout" onPress={handleLogout} />
+    <View style={styles.container}>
+      <Text style={styles.title}>Welcome to QuickCount 🎉</Text>
+      <Button
+        title="Go to Expenses"
+        onPress={() => navigation.navigate("Expense")}
+      />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: "center", alignItems: "center" },
+  title: { fontSize: 22, marginBottom: 20 },
+});

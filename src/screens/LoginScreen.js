@@ -1,45 +1,34 @@
 import React, { useState } from "react";
-import { View, TextInput, Button, Text, Alert } from "react-native";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../config/firebase";
+import { View, Text, StyleSheet } from "react-native";
+import InputField from "../Components/InputField";
+import ButtonPrimary from "../Components/ButtonPrimary";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async () => {
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      Alert.alert("Welcome!", "Login successful");
-      navigation.replace("Home");
-    } catch (error) {
-      Alert.alert("Login Error", error.message);
-    }
-  };
-
   return (
-    <View style={{ padding: 20 }}>
-      <Text style={{ fontSize: 24, textAlign: "center" }}>Login</Text>
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        style={{ borderWidth: 1, padding: 10, marginVertical: 10 }}
-      />
-      <TextInput
+    <View style={styles.container}>
+      <Text style={styles.title}>QuickCount Login</Text>
+
+      <InputField placeholder="Email" value={email} onChangeText={setEmail} />
+      <InputField
         placeholder="Password"
-        secureTextEntry
         value={password}
         onChangeText={setPassword}
-        style={{ borderWidth: 1, padding: 10, marginVertical: 10 }}
+        secureTextEntry
       />
-      <Button title="Login" onPress={handleLogin} />
-      <Text
-        style={{ marginTop: 20, color: "blue", textAlign: "center" }}
-        onPress={() => navigation.navigate("Register")}
-      >
+      <ButtonPrimary title="Login" onPress={() => alert("Login clicked")} />
+
+      <Text style={styles.link} onPress={() => navigation.navigate("Register")}>
         Don’t have an account? Register
       </Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 20, justifyContent: "center" },
+  title: { fontSize: 24, textAlign: "center", marginBottom: 20 },
+  link: { color: "blue", textAlign: "center", marginTop: 10 },
+});

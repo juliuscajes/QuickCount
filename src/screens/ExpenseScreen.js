@@ -7,22 +7,29 @@ import {
   FlatList,
   StyleSheet,
 } from "react-native";
+import CategoryPicker from "../Components/CategoryPicker";
 
 export default function ExpenseScreen({ navigation }) {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
   const [expenses, setExpenses] = useState([]);
 
   const addExpense = () => {
-    if (!amount || !description) return alert("Please fill all fields!");
+    if (!amount || !description || !category)
+      return alert("Please fill all fields!");
+
     const newExpense = {
       id: Date.now().toString(),
       amount: parseFloat(amount),
       description,
+      category,
     };
+
     setExpenses([...expenses, newExpense]);
     setAmount("");
     setDescription("");
+    setCategory("");
   };
 
   const deleteExpense = (id) => {
@@ -47,6 +54,12 @@ export default function ExpenseScreen({ navigation }) {
         onChangeText={setDescription}
       />
 
+      {/* 🆕 Add Category Picker here */}
+      <CategoryPicker
+        selectedCategory={category}
+        onValueChange={(value) => setCategory(value)}
+      />
+
       <Button title="Add Expense" onPress={addExpense} />
 
       <FlatList
@@ -55,7 +68,7 @@ export default function ExpenseScreen({ navigation }) {
         renderItem={({ item }) => (
           <View style={styles.expenseItem}>
             <Text>
-              ₱{item.amount} - {item.description}
+              ₱{item.amount} - {item.description} ({item.category})
             </Text>
             <Button title="Delete" onPress={() => deleteExpense(item.id)} />
           </View>

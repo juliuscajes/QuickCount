@@ -6,8 +6,12 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to QuickCount 🎉</Text>
       <Button
-        title="Go to Expenses"
+        title="Go to Expense Tracker 💰"
         onPress={() => navigation.navigate("Expense")}
+      />
+      <Button
+        title="View Graph 📊"
+        onPress={() => navigation.navigate("Graph")}
       />
     </View>
   );

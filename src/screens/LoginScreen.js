@@ -18,7 +18,7 @@ export default function LoginScreen({ navigation }) {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <ButtonPrimary title="Login" onPress={() => alert("Login clicked")} />
+      <ButtonPrimary title="Login" onPress={() => navigation.replace("Home")} />
 
       <Text style={styles.link} onPress={() => navigation.navigate("Register")}>
         Don’t have an account? Register

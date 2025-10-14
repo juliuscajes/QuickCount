@@ -7,6 +7,7 @@ import HomeScreen from "../screens/HomeScreen";
 import ExpenseScreen from "../screens/ExpenseScreen";
 import GraphScreen from "../screens/GraphScreen";
 import ConverterScreen from "../screens/ConverterScreen";
+import TabNavigator from "./TabNavigator";
 
 const Stack = createStackNavigator();
 
@@ -20,6 +21,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Expense" component={ExpenseScreen} />
         <Stack.Screen name="Graph" component={GraphScreen} />
         <Stack.Screen name="Converter" component={ConverterScreen} />
+        <Stack.Screen name="Main" component={TabNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
   );

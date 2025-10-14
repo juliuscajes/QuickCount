@@ -7,6 +7,7 @@ import HomeScreen from "../screens/HomeScreen";
 import ExpenseScreen from "../screens/ExpenseScreen";
 import GraphScreen from "../screens/GraphScreen";
 import ConverterScreen from "../screens/ConverterScreen";
+import CollaborationScreen from "../screens/CollaborationScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -28,6 +29,8 @@ export default function TabNavigator() {
             iconName = "bar-chart";
           } else if (route.name === "Converter") {
             iconName = "swap-horizontal";
+          } else if (route.name === "Collaboration") {
+            iconName = "people";
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -38,6 +41,7 @@ export default function TabNavigator() {
       <Tab.Screen name="Expenses" component={ExpenseScreen} />
       <Tab.Screen name="Graph" component={GraphScreen} />
       <Tab.Screen name="Converter" component={ConverterScreen} />
+      <Tab.Screen name="Collaboration" component={CollaborationScreen} />
     </Tab.Navigator>
   );
 }

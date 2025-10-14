@@ -2,17 +2,22 @@ import React from "react";
 import { View, Text, StyleSheet, Dimensions, ScrollView } from "react-native";
 import { BarChart } from "react-native-chart-kit";
 
-export default function GraphScreen({ navigation }) {
+export default function GraphScreen({ route }) {
+  const { expenses = [] } = route.params || {}; // 🆕 Get expenses from route params
   const screenWidth = Dimensions.get("window").width;
 
-  // Dummy data for now — later this will come from Firestore
+  // 🧮 Calculate total per category
+  const categories = ["Food", "Transport", "Bills", "Shopping", "Others"];
+  const totals = categories.map((cat) =>
+    expenses
+      .filter((item) => item.category === cat)
+      .reduce((sum, item) => sum + item.amount, 0)
+  );
+
+  // Prepare data for chart
   const data = {
-    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    datasets: [
-      {
-        data: [200, 450, 300, 600, 250, 500, 400],
-      },
-    ],
+    labels: categories,
+    datasets: [{ data: totals }],
   };
 
   const chartConfig = {
@@ -22,25 +27,24 @@ export default function GraphScreen({ navigation }) {
     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
     strokeWidth: 2,
     barPercentage: 0.7,
-    useShadowColorFromDataset: false,
   };
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Weekly Spending Graph 📈</Text>
+      <Text style={styles.title}>Expense Summary 📊</Text>
 
-      <BarChart
-        data={data}
-        width={screenWidth - 20}
-        height={250}
-        yAxisLabel="₱"
-        chartConfig={chartConfig}
-        style={styles.chart}
-      />
-
-      <Text style={styles.note}>
-        This is sample data. Real data will appear once Firebase is connected.
-      </Text>
+      {expenses.length === 0 ? (
+        <Text style={styles.note}>No expenses yet. Add some first.</Text>
+      ) : (
+        <BarChart
+          data={data}
+          width={screenWidth - 20}
+          height={250}
+          yAxisLabel="₱"
+          chartConfig={chartConfig}
+          style={styles.chart}
+        />
+      )}
     </ScrollView>
   );
 }
@@ -49,5 +53,5 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 10 },
   title: { fontSize: 24, textAlign: "center", marginVertical: 10 },
   chart: { marginVertical: 8, borderRadius: 16 },
-  note: { textAlign: "center", color: "gray", marginTop: 10 },
+  note: { textAlign: "center", color: "gray", marginTop: 20 },
 });

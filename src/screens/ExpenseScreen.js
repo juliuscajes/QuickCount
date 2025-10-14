@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
 import CategoryPicker from "../Components/CategoryPicker";
 
 export default function ExpenseScreen({ navigation }) {
+  const [budget, setBudget] = useState(""); // 🆕 user-entered budget
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
@@ -36,9 +37,40 @@ export default function ExpenseScreen({ navigation }) {
     setExpenses(expenses.filter((item) => item.id !== id));
   };
 
+  // 🧮 Calculate totals automatically when expenses change
+  const totalSpent = useMemo(
+    () => expenses.reduce((sum, item) => sum + item.amount, 0),
+    [expenses]
+  );
+
+  const remaining = budget ? Math.max(budget - totalSpent, 0) : null;
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Expense Tracker 💰</Text>
+
+      {/* 🆕 Budget Input */}
+      <TextInput
+        style={styles.input}
+        placeholder="Enter total budget (₱)"
+        keyboardType="numeric"
+        value={budget}
+        onChangeText={setBudget}
+      />
+
+      {/* 🧾 Display totals */}
+      {budget ? (
+        <View style={styles.summaryBox}>
+          <Text style={styles.total}>💵 Total Spent: ₱{totalSpent}</Text>
+          <Text style={styles.remaining}>
+            💸 Remaining Balance: ₱{remaining}
+          </Text>
+        </View>
+      ) : (
+        <Text style={styles.note}>
+          Set a budget to track remaining balance.
+        </Text>
+      )}
 
       <TextInput
         style={styles.input}
@@ -54,7 +86,6 @@ export default function ExpenseScreen({ navigation }) {
         onChangeText={setDescription}
       />
 
-      {/* 🆕 Add Category Picker here */}
       <CategoryPicker
         selectedCategory={category}
         onValueChange={(value) => setCategory(value)}
@@ -77,7 +108,7 @@ export default function ExpenseScreen({ navigation }) {
 
       <Button
         title="View Graph 📊"
-        onPress={() => navigation.navigate("Graph")}
+        onPress={() => navigation.navigate("Graph", { expenses })}
       />
     </View>
   );
@@ -92,6 +123,20 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     marginVertical: 8,
+  },
+  summaryBox: {
+    backgroundColor: "#eef6ff",
+    borderRadius: 10,
+    padding: 10,
+    marginVertical: 8,
+  },
+  total: { fontSize: 18, color: "#007AFF", fontWeight: "bold" },
+  remaining: { fontSize: 18, color: "#28a745", fontWeight: "bold" },
+  note: {
+    color: "gray",
+    fontStyle: "italic",
+    textAlign: "center",
+    marginBottom: 8,
   },
   expenseItem: {
     flexDirection: "row",

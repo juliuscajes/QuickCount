@@ -13,6 +13,10 @@ export default function HomeScreen({ navigation }) {
         title="View Graph 📊"
         onPress={() => navigation.navigate("Graph")}
       />
+      <Button
+        title="Currency Converter 💱"
+        onPress={() => navigation.navigate("Converter")}
+      />
     </View>
   );
 }

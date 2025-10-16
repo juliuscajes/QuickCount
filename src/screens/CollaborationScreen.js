@@ -3,51 +3,100 @@ import {
   View,
   Text,
   TextInput,
-  Button,
+  TouchableOpacity,
   FlatList,
   StyleSheet,
+  Alert,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function CollaborationScreen() {
-  const [members, setMembers] = useState([]);
-  const [memberName, setMemberName] = useState("");
+  const [transactions, setTransactions] = useState([]);
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState("");
+  const [addedBy, setAddedBy] = useState("");
 
-  const addMember = () => {
-    if (memberName.trim() === "") return;
-    setMembers([...members, { id: Date.now().toString(), name: memberName }]);
-    setMemberName("");
+  const handleAddTransaction = () => {
+    if (!description || !amount || !addedBy) {
+      Alert.alert("Please fill in all fields");
+      return;
+    }
+
+    const newTransaction = {
+      id: Math.random().toString(),
+      description,
+      amount: parseFloat(amount),
+      addedBy,
+      date: new Date().toLocaleDateString(),
+    };
+
+    setTransactions([newTransaction, ...transactions]);
+    setDescription("");
+    setAmount("");
+    setAddedBy("");
   };
+
+  const renderItem = ({ item }) => (
+    <View style={styles.itemContainer}>
+      <View>
+        <Text style={styles.itemDescription}>{item.description}</Text>
+        <Text style={styles.itemBy}>Added by: {item.addedBy}</Text>
+        <Text style={styles.itemDate}>{item.date}</Text>
+      </View>
+      <Text
+        style={[
+          styles.itemAmount,
+          { color: item.amount > 0 ? "#4CD964" : "#FF4D4D" },
+        ]}
+      >
+        {item.amount > 0 ? "+" : "-"}₱{Math.abs(item.amount)}
+      </Text>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>👥 Collaboration</Text>
-      <Text style={styles.subtitle}>Invite or list your group members</Text>
+      <Text style={styles.subtitle}>Work together on shared transactions</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Enter member name"
-        value={memberName}
-        onChangeText={setMemberName}
-      />
+      {/* Inputs */}
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter description"
+          placeholderTextColor="#aaa"
+          value={description}
+          onChangeText={setDescription}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter amount"
+          placeholderTextColor="#aaa"
+          keyboardType="numeric"
+          value={amount}
+          onChangeText={setAmount}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your name"
+          placeholderTextColor="#aaa"
+          value={addedBy}
+          onChangeText={setAddedBy}
+        />
+      </View>
 
-      <Button title="Add Member" onPress={addMember} color="#007AFF" />
+      <TouchableOpacity style={styles.addBtn} onPress={handleAddTransaction}>
+        <Ionicons name="add" size={24} color="white" />
+        <Text style={styles.addText}>Add Transaction</Text>
+      </TouchableOpacity>
 
+      {/* List of Transactions */}
       <FlatList
-        data={members}
+        data={transactions}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.memberBox}>
-            <Text style={styles.memberText}>• {item.name}</Text>
-          </View>
-        )}
-        style={{ marginTop: 20 }}
+        renderItem={renderItem}
+        contentContainerStyle={{ marginTop: 15 }}
       />
-
-      {members.length === 0 && (
-        <Text style={styles.note}>
-          No members yet. Add your first collaborator!
-        </Text>
-      )}
     </View>
   );
 }
@@ -55,41 +104,64 @@ export default function CollaborationScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F7F9FC",
+    backgroundColor: "#f8f8f8ff",
     padding: 20,
   },
   title: {
+    color: "black",
     fontSize: 22,
     fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 5,
   },
   subtitle: {
-    textAlign: "center",
     color: "gray",
     marginBottom: 20,
   },
+  inputContainer: {
+    marginBottom: 10,
+  },
   input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
+    backgroundColor: "#ffffffff",
+    color: "black",
+    padding: 12,
     borderRadius: 10,
     marginBottom: 10,
   },
-  memberBox: {
-    backgroundColor: "#fff",
-    padding: 10,
+  addBtn: {
+    flexDirection: "row",
+    backgroundColor: "#007AFF",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 12,
     borderRadius: 10,
-    marginBottom: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: "#007AFF",
   },
-  memberText: {
+  addText: {
+    color: "white",
     fontSize: 16,
+    marginLeft: 5,
   },
-  note: {
-    textAlign: "center",
+  itemContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: "#2C2C2E",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  itemDescription: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  itemBy: {
     color: "gray",
-    marginTop: 20,
+    fontSize: 12,
+  },
+  itemDate: {
+    color: "#aaa",
+    fontSize: 11,
+  },
+  itemAmount: {
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });

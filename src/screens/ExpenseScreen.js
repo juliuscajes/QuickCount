@@ -3,22 +3,23 @@ import {
   View,
   Text,
   TextInput,
-  Button,
+  TouchableOpacity,
   FlatList,
   StyleSheet,
 } from "react-native";
 import CategoryPicker from "../Components/CategoryPicker";
 
 export default function ExpenseScreen({ navigation }) {
-  const [budget, setBudget] = useState(""); // 🆕 user-entered budget
+  const [budget, setBudget] = useState("");
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [expenses, setExpenses] = useState([]);
 
   const addExpense = () => {
-    if (!amount || !description || !category)
+    if (!amount || !description || !category) {
       return alert("Please fill all fields!");
+    }
 
     const newExpense = {
       id: Date.now().toString(),
@@ -37,7 +38,6 @@ export default function ExpenseScreen({ navigation }) {
     setExpenses(expenses.filter((item) => item.id !== id));
   };
 
-  // 🧮 Calculate totals automatically when expenses change
   const totalSpent = useMemo(
     () => expenses.reduce((sum, item) => sum + item.amount, 0),
     [expenses]
@@ -47,9 +47,8 @@ export default function ExpenseScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Expense Tracker 💰</Text>
+      <Text style={styles.title}>Expense Tracker</Text>
 
-      {/* 🆕 Budget Input */}
       <TextInput
         style={styles.input}
         placeholder="Enter total budget (₱)"
@@ -58,18 +57,21 @@ export default function ExpenseScreen({ navigation }) {
         onChangeText={setBudget}
       />
 
-      {/* 🧾 Display totals */}
       {budget ? (
         <View style={styles.summaryBox}>
-          <Text style={styles.total}>💵 Total Spent: ₱{totalSpent}</Text>
-          <Text style={styles.remaining}>
-            💸 Remaining Balance: ₱{remaining}
-          </Text>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Spent</Text>
+            <Text style={styles.summaryValue}>₱{totalSpent.toFixed(2)}</Text>
+          </View>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Remaining</Text>
+            <Text style={styles.summaryValueRemaining}>
+              ₱{remaining.toFixed(2)}
+            </Text>
+          </View>
         </View>
       ) : (
-        <Text style={styles.note}>
-          Set a budget to track remaining balance.
-        </Text>
+        <Text style={styles.note}>Set a budget to track expenses.</Text>
       )}
 
       <TextInput
@@ -81,7 +83,7 @@ export default function ExpenseScreen({ navigation }) {
       />
       <TextInput
         style={styles.input}
-        placeholder="Enter description"
+        placeholder="Description"
         value={description}
         onChangeText={setDescription}
       />
@@ -91,58 +93,166 @@ export default function ExpenseScreen({ navigation }) {
         onValueChange={(value) => setCategory(value)}
       />
 
-      <Button title="Add Expense" onPress={addExpense} />
+      <TouchableOpacity style={styles.addButton} onPress={addExpense}>
+        <Text style={styles.addButtonText}>Add Expense</Text>
+      </TouchableOpacity>
 
       <FlatList
         data={expenses}
         keyExtractor={(item) => item.id}
+        contentContainerStyle={{ paddingBottom: 20 }}
         renderItem={({ item }) => (
-          <View style={styles.expenseItem}>
-            <Text>
-              ₱{item.amount} - {item.description} ({item.category})
-            </Text>
-            <Button title="Delete" onPress={() => deleteExpense(item.id)} />
+          <View style={styles.expenseCard}>
+            <View style={styles.expenseInfo}>
+              <Text style={styles.expenseAmount}>
+                ₱{item.amount.toFixed(2)}
+              </Text>
+              <Text style={styles.expenseDesc}>{item.description}</Text>
+              <Text style={styles.expenseCategory}>{item.category}</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => deleteExpense(item.id)}
+            >
+              <Text style={styles.deleteText}>X</Text>
+            </TouchableOpacity>
           </View>
         )}
       />
 
-      <Button
-        title="View Graph 📊"
+      <TouchableOpacity
+        style={styles.graphButton}
         onPress={() => navigation.navigate("Graph", { expenses })}
-      />
+      >
+        <Text style={styles.graphButtonText}>View Graph</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  title: { fontSize: 24, textAlign: "center", marginBottom: 20 },
+  container: {
+    flex: 1,
+    backgroundColor: "#fafafa",
+    paddingHorizontal: 20,
+    paddingTop: 30,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "700",
+    textAlign: "center",
+    marginBottom: 24,
+    color: "#333",
+  },
   input: {
+    height: 48,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    padding: 10,
-    marginVertical: 8,
+    borderColor: "#ddd",
+    fontSize: 16,
+    color: "#333",
   },
   summaryBox: {
-    backgroundColor: "#eef6ff",
+    backgroundColor: "#e8f4ff",
     borderRadius: 10,
-    padding: 10,
-    marginVertical: 8,
+    padding: 16,
+    marginBottom: 16,
   },
-  total: { fontSize: 18, color: "#007AFF", fontWeight: "bold" },
-  remaining: { fontSize: 18, color: "#28a745", fontWeight: "bold" },
-  note: {
-    color: "gray",
-    fontStyle: "italic",
-    textAlign: "center",
-    marginBottom: 8,
-  },
-  expenseItem: {
+  summaryRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    borderBottomWidth: 1,
-    borderColor: "#ddd",
-    paddingVertical: 8,
+    marginBottom: 8,
+  },
+  summaryLabel: {
+    fontSize: 16,
+    color: "#555",
+  },
+  summaryValue: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#007BFF",
+  },
+  summaryValueRemaining: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#28a745",
+  },
+  note: {
+    textAlign: "center",
+    color: "#888",
+    marginBottom: 16,
+  },
+  addButton: {
+    backgroundColor: "#007BFF",
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  addButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  expenseCard: {
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 16,
+    marginVertical: 6,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    // shadow for iOS
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    // elevation for Android
+    elevation: 2,
+  },
+  expenseInfo: {
+    flex: 1,
+  },
+  expenseAmount: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#333",
+  },
+  expenseDesc: {
+    fontSize: 15,
+    color: "#666",
+    marginTop: 4,
+  },
+  expenseCategory: {
+    fontSize: 13,
+    color: "#888",
+    marginTop: 2,
+    fontStyle: "italic",
+  },
+  deleteButton: {
+    marginLeft: 16,
+    padding: 6,
+    borderRadius: 4,
+    backgroundColor: "#ffdddd",
+  },
+  deleteText: {
+    color: "#cc0000",
+    fontWeight: "700",
+    fontSize: 16,
+  },
+  graphButton: {
+    backgroundColor: "#28a745",
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  graphButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

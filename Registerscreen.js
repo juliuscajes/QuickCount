@@ -1,4 +1,3 @@
-// screens/LoginScreen.js
 import React, { useState } from "react";
 import {
   View,
@@ -6,51 +5,40 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  SafeAreaView,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { View, TextInput, Button, Text, Alert } from "react-native";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../config/firebase"; // r import
-import { View, Text, StyleSheet } from "react-native";
-import InputField from "../Components/InputField";
-import ButtonPrimary from "../Components/ButtonPrimary";
 
-export default function LoginScreen({ navigation }) {
+export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleLogin = () => {
-    if (!email || !password) {
-      alert("Please enter your email and password.");
+  const handleRegister = () => {
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
       return;
     }
-    navigation.replace("Main");
-  const handleLogin = async () => {
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      Alert.alert("Welcome!", "Login successful");
-      navigation.replace("Main");
-    } catch (error) {
-      Alert.alert("Login Error", error.message);
-    }
+    alert("Registered successfully!");
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <LinearGradient
-        colors={["#685281ff", "#574eceff"]}
+        colors={["#6a11cb", "#2575fc"]}
         style={styles.container}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
         <View style={styles.card}>
-          <Text style={styles.title}>QuickCount Login</Text>
-          <Text style={styles.subtitle}>Welcome back! Please sign in</Text>
+          <Text style={styles.title}>Create Account</Text>
+          <Text style={styles.subtitle}>
+            Sign up now and start using QuickCount
+          </Text>
 
           <TextInput
             style={styles.input}
-            placeholder="Enter Username"
+            placeholder="Enter Email"
             placeholderTextColor="#ddd"
             value={email}
             onChangeText={setEmail}
@@ -65,30 +53,34 @@ export default function LoginScreen({ navigation }) {
             onChangeText={setPassword}
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <TextInput
+            style={styles.input}
+            placeholder="Confirm Password"
+            placeholderTextColor="#ddd"
+            secureTextEntry
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+          />
+
+          <TouchableOpacity style={styles.button} onPress={handleRegister}>
             <LinearGradient
               colors={["#a100ff", "#00d4ff"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.buttonGradient}
             >
-              <Text style={styles.buttonText}>Login</Text>
+              <Text style={styles.buttonText}>Sign Up</Text>
             </LinearGradient>
           </TouchableOpacity>
 
-          <TouchableOpacity>
-            <Text style={styles.forgot}>Forget Password ?</Text>
-          </TouchableOpacity>
-
-          <Text style={styles.link} onPress={() => navigation.navigate("Register")}>
-            Don’t have an account?{" "}
-            <Text style={styles.linkHighlight}>Register</Text>
+          <Text style={styles.link} onPress={() => navigation.navigate("Login")}>
+            Already have an account?{" "}
+            <Text style={styles.linkHighlight}>Login</Text>
           </Text>
         </View>
       </LinearGradient>
     </SafeAreaView>
   );
-}
 }
 
 const styles = StyleSheet.create({
@@ -103,11 +95,11 @@ const styles = StyleSheet.create({
   },
   card: {
     width: "85%",
-    backgroundColor: "rgba(0, 0, 0, 1)",
+    backgroundColor: "rgba(255,255,255,0.15)",
     borderRadius: 20,
     padding: 25,
     alignItems: "center",
-    shadowColor: "#0c0c0cd5",
+    shadowColor: "#000",
     shadowOpacity: 0.3,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 5 },
@@ -120,7 +112,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 15,
-    color: "rgba(161, 155, 155, 0.8)",
+    color: "rgba(255,255,255,0.8)",
     textAlign: "center",
     marginBottom: 25,
   },
@@ -147,12 +139,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "700",
     fontSize: 16,
-  },
-  forgot: {
-    color: "#fff",
-    fontSize: 14,
-    marginTop: 12,
-    textDecorationLine: "underline",
   },
   link: {
     color: "#fff",

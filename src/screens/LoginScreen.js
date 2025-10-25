@@ -12,9 +12,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { View, TextInput, Button, Text, Alert } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../config/firebase"; // r import
-import { View, Text, StyleSheet } from "react-native";
-import InputField from "../Components/InputField";
-import ButtonPrimary from "../Components/ButtonPrimary";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -37,6 +34,7 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
+
     <SafeAreaView style={styles.safeArea}>
       <LinearGradient
         colors={["#685281ff", "#574eceff"]}

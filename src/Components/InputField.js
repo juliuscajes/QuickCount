@@ -6,14 +6,21 @@ export default function InputField({
   value,
   onChangeText,
   secureTextEntry,
+  keyboardType = "default",
+  placeholderTextColor = "#B0B8C4",
+  textColor = "#FFFFFF", // White text for dark background
 }) {
   return (
     <TextInput
-      style={styles.input}
+      style={[styles.input, { color: textColor }]}
       placeholder={placeholder}
+      placeholderTextColor={placeholderTextColor}
       value={value}
       onChangeText={onChangeText}
       secureTextEntry={secureTextEntry}
+      keyboardType={keyboardType}
+      autoCapitalize="none"
+      autoCorrect={false}
     />
   );
 }
@@ -21,9 +28,12 @@ export default function InputField({
 const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    padding: 10,
+    borderColor: "#3A4A5A",
+    borderRadius: 12,
+    padding: 16,
     marginVertical: 8,
+    backgroundColor: "#2A3A4A",
+    fontSize: 16,
+    fontWeight: "500",
   },
 });

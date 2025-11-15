@@ -38,7 +38,7 @@ export default function TabNavigator() {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Expenses" component={ExpenseScreen} />
+      <Tab.Screen name="Expense" component={ExpenseScreen} />
       <Tab.Screen name="Graph" component={GraphScreen} />
       <Tab.Screen name="Converter" component={ConverterScreen} />
       <Tab.Screen name="Collaboration" component={CollaborationScreen} />
